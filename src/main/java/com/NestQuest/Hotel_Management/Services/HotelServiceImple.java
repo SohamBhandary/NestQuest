@@ -2,7 +2,7 @@ package com.NestQuest.Hotel_Management.Services;
 
 import com.NestQuest.Hotel_Management.DTOs.HotelDTO;
 import com.NestQuest.Hotel_Management.Entities.Hotel;
-import com.NestQuest.Hotel_Management.Exceptions.ResourceNotFound;
+import com.NestQuest.Hotel_Management.Exceptions.ResourceNotFoundException;
 import com.NestQuest.Hotel_Management.Repositories.HotelRepsoitory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class HotelServiceImple implements HotelService{
     public HotelDTO getHotelById(Long id) {
 
         log.info("Getting hotel with id:{}",id);
-     Hotel hotel=   hotelRepsoitory.findById(id).orElseThrow(()->new ResourceNotFound("Hotel not found with id"+id));
+     Hotel hotel=   hotelRepsoitory.findById(id).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id"+id));
      return modelMapper.map(hotel,HotelDTO.class) ;
 
     }
@@ -45,7 +45,7 @@ public class HotelServiceImple implements HotelService{
     public HotelDTO updateHotelById(Long id, HotelDTO hotelDTO) {
         log.info("Updating hotel with id:{}",id);
         Hotel hotel=   hotelRepsoitory.findById(id).
-                orElseThrow(()->new ResourceNotFound("Hotel not found with id"+id));
+                orElseThrow(()->new ResourceNotFoundException("Hotel not found with id"+id));
 
         modelMapper.map(hotelDTO,hotel);
         hotel.setId(id);
@@ -57,8 +57,20 @@ public class HotelServiceImple implements HotelService{
     @Override
     public void deleteHotelById(Long id) {
         boolean exsits=hotelRepsoitory.existsById(id);
-        if(!exsits) throw  new ResourceNotFound("Hotel not found with id"+id);
+        if(!exsits) throw  new ResourceNotFoundException("Hotel not found with id"+id);
         hotelRepsoitory.deleteById(id);
+
+
+    }
+
+    @Override
+    public void activateHotel(Long hotelId) {
+        log.info("Activiting hotel with id:{}",hotelId);
+        Hotel hotel=   hotelRepsoitory.findById(hotelId).
+                orElseThrow(()->new ResourceNotFoundException("Hotel not found with id"+hotelId));
+        hotel.setIsActive(true);
+
+
 
 
     }
