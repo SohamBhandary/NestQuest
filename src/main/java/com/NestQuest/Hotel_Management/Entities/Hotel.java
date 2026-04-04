@@ -30,6 +30,9 @@ public class Hotel {
     @Column(columnDefinition = "TEXT[]")
     private String[] amenities;
 
+    @Column(nullable = false)
+    private Boolean isActive;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -40,6 +43,10 @@ public class Hotel {
 
     @Embedded
     private HotelContactInfo contactInfo;
+
+    @ManyToOne
+    private User owner;
+
 
 
 
