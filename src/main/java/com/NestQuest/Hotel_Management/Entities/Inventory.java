@@ -1,8 +1,7 @@
 package com.NestQuest.Hotel_Management.Entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,6 +14,9 @@ import java.time.LocalDateTime;
 @Setter
 @Table(uniqueConstraints = @UniqueConstraint(name="unique_hotel_room_date"
                               ,columnNames = {"hotel_id","room_id","date"}))
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

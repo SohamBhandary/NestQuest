@@ -6,6 +6,7 @@ import com.NestQuest.Hotel_Management.Entities.Room;
 import com.NestQuest.Hotel_Management.Exceptions.ResourceNotFoundException;
 import com.NestQuest.Hotel_Management.Repositories.HotelRepsoitory;
 import com.NestQuest.Hotel_Management.Repositories.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,7 @@ public class RoomServiceImple implements RoomService {
     private final RoomRepository roomRepository;
     private final ModelMapper modelMapper;
     private final HotelRepsoitory hotelRepsoitory;
+    private final InventoryService inventoryService;
 
     @Override
     public RoomDTO createNewRoom(Long HotelID,RoomDTO roomDTO) {
@@ -31,7 +33,12 @@ public class RoomServiceImple implements RoomService {
         Room room= modelMapper.map(roomDTO,Room.class);
         room.setHotel(hotel);
         room=roomRepository.save(room);
+        if(hotel.getIsActive()){
+            inventoryService.initializeRoomForAYear(room);
+
+        }
         return modelMapper.map(room,RoomDTO.class);
+
 
     }
 
@@ -55,10 +62,15 @@ public class RoomServiceImple implements RoomService {
     }
 
     @Override
+    @Transactional
     public void deleteRoomById(Long roomId) {
         log.info("Deleting room with  id :{}",roomId);
-        boolean exsists=roomRepository.existsById(roomId);
-        if(!exsists) throw new ResourceNotFoundException("Room not found with id:{}"+roomId);
+        Room room=   roomRepository.findById(roomId).
+                orElseThrow(()->new ResourceNotFoundException("Room not found with id: "+ roomId));
+
+
+
+        inventoryService.deleteAllInventories(room);
         roomRepository.deleteById(roomId);
 
 

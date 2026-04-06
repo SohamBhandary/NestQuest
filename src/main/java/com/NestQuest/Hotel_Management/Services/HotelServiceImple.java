@@ -1,13 +1,20 @@
 package com.NestQuest.Hotel_Management.Services;
 
 import com.NestQuest.Hotel_Management.DTOs.HotelDTO;
+import com.NestQuest.Hotel_Management.DTOs.HotelInfoDTO;
+import com.NestQuest.Hotel_Management.DTOs.RoomDTO;
 import com.NestQuest.Hotel_Management.Entities.Hotel;
+import com.NestQuest.Hotel_Management.Entities.Room;
 import com.NestQuest.Hotel_Management.Exceptions.ResourceNotFoundException;
 import com.NestQuest.Hotel_Management.Repositories.HotelRepsoitory;
+import com.NestQuest.Hotel_Management.Repositories.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -17,6 +24,8 @@ public class HotelServiceImple implements HotelService{
 
     private final HotelRepsoitory hotelRepsoitory;
     private final ModelMapper modelMapper;
+    private final InventoryService inventoryService;
+    private final RoomRepository roomRepository;
 
 
     @Override
@@ -55,22 +64,48 @@ public class HotelServiceImple implements HotelService{
     }
 
     @Override
+    @Transactional
     public void deleteHotelById(Long id) {
-        boolean exsits=hotelRepsoitory.existsById(id);
-        if(!exsits) throw  new ResourceNotFoundException("Hotel not found with id"+id);
+        Hotel hotel=   hotelRepsoitory.findById(id).
+                orElseThrow(()->new ResourceNotFoundException("Hotel not found with id"+id));
+
+
+        for(Room room:hotel.getRooms()){
+            inventoryService.deleteAllInventories(room);
+            roomRepository.deleteById(room.getId());
+        }
         hotelRepsoitory.deleteById(id);
+
+
+
 
 
     }
 
     @Override
+    @Transactional
     public void activateHotel(Long hotelId) {
         log.info("Activiting hotel with id:{}",hotelId);
         Hotel hotel=   hotelRepsoitory.findById(hotelId).
                 orElseThrow(()->new ResourceNotFoundException("Hotel not found with id"+hotelId));
         hotel.setIsActive(true);
+        for(Room room:hotel.getRooms()){
+            inventoryService.initializeRoomForAYear(room);
+        }
 
 
+
+
+
+
+    }
+
+    @Override
+    public HotelInfoDTO getHotelInfo(Long hotelId) {
+        Hotel hotel=   hotelRepsoitory.findById(hotelId).
+                orElseThrow(()->new ResourceNotFoundException("Hotel not found with id"+hotelId));
+        List<RoomDTO> rooms=hotel.getRooms().stream().map((e)->modelMapper.map(e,RoomDTO.class)).toList();
+        return new HotelInfoDTO(modelMapper.map(hotel,HotelDTO.class),rooms);
 
 
     }

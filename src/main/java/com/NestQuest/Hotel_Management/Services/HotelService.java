@@ -1,6 +1,7 @@
 package com.NestQuest.Hotel_Management.Services;
 
 import com.NestQuest.Hotel_Management.DTOs.HotelDTO;
+import com.NestQuest.Hotel_Management.DTOs.HotelInfoDTO;
 import com.NestQuest.Hotel_Management.Entities.Hotel;
 
 public interface HotelService {
@@ -11,4 +12,5 @@ public interface HotelService {
     void deleteHotelById(Long id);
     void activateHotel(Long hotelId);
 
+    HotelInfoDTO getHotelInfo(Long hotelId);
 }
