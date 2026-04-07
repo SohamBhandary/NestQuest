@@ -47,6 +47,7 @@ public class InventoryServiceImple implements InventoryService{
 
     @Override
     public void deleteAllInventories(Room room) {
+        log.info("Deleteing the inventories of room with id :{}",room.getId());
         LocalDate today=LocalDate.now();
         inventoryRepository.deleteByRoom(room);
 
@@ -54,6 +55,7 @@ public class InventoryServiceImple implements InventoryService{
 
     @Override
     public Page<HotelDTO> searchHotels(HotelSearchRequestDTO hotelSearchRequestDTO) {
+        log.info("Searching hotels for {}city,from {}startDate and {}endDate ",hotelSearchRequestDTO.getCity(),hotelSearchRequestDTO.getStartDate(),hotelSearchRequestDTO.getEndDate());
         Pageable pageable= PageRequest.of(hotelSearchRequestDTO.getPage(),hotelSearchRequestDTO.getSize());
         Long dateCount= ChronoUnit.DAYS.between(hotelSearchRequestDTO.getStartDate(),hotelSearchRequestDTO.getEndDate())+1;
    Page<Hotel> hotelPage= inventoryRepository.findHotelsWithAvailableInventory(hotelSearchRequestDTO.getCity(), hotelSearchRequestDTO.getStartDate(),hotelSearchRequestDTO.getEndDate(),hotelSearchRequestDTO.getRoomsCount(),dateCount,pageable);

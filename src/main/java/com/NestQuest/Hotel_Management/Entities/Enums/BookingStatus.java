@@ -2,7 +2,9 @@ package com.NestQuest.Hotel_Management.Entities.Enums;
 
 public enum BookingStatus {
         RESERVED,
-    PENDING,
+    GUEST_ADDED,
+    PAYMENT_PENDING,
     CONFIRMED,
-    CANCELLED
+    CANCELLED,
+    EXPIRED
 }

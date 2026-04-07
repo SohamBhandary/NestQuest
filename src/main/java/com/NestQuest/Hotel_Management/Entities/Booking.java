@@ -2,11 +2,11 @@ package com.NestQuest.Hotel_Management.Entities;
 
 import com.NestQuest.Hotel_Management.Entities.Enums.BookingStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -14,6 +14,9 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Booking {
 
     @Id
@@ -41,6 +44,8 @@ public class Booking {
 
     @Column(nullable = false)
     private  LocalDate checkOutDate;
+    @Column(nullable = false,precision = 10,scale = 2)
+    private BigDecimal amount;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -48,9 +53,7 @@ public class Booking {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
-    private PaymentInfo paymentInfo;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
